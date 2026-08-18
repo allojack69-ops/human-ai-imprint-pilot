@@ -6,6 +6,6 @@ services:
     envVars:
       - key: ADMIN_KEY
         generateValue: true
-      - key: DATABASE_PATH
-        value: /data/pilot.db
+      - key: DATABASE_URL
+        sync: false
     healthCheckPath: /health

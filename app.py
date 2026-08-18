@@ -1,5 +1,5 @@
 from __future__ import annotations
-import csv, io, json, math, os, random, sqlite3, time, uuid
+import csv, io, json, math, os, random, time, uuid
 from pathlib import Path
 from typing import Optional
 
@@ -7,10 +7,13 @@ from fastapi import FastAPI, HTTPException, Header
 from fastapi.responses import HTMLResponse, JSONResponse, StreamingResponse, FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
+from psycopg import connect
+from psycopg.rows import dict_row
 
 BASE = Path(__file__).resolve().parent
-DB = Path(os.environ.get("DATABASE_PATH", str(BASE / "pilot.db")))
-DB.parent.mkdir(parents=True, exist_ok=True)
+DATABASE_URL = os.environ.get("DATABASE_URL", "").strip()
+if not DATABASE_URL:
+    raise RuntimeError("DATABASE_URL is required")
 
 QUESTIONS = json.loads((BASE/"data/questions.json").read_text(encoding="utf-8"))
 AI_QUESTIONS = json.loads((BASE/"data/ai_questions.json").read_text(encoding="utf-8"))
@@ -18,78 +21,43 @@ QMAP = {q["id"]: q for q in QUESTIONS}
 AIMAP = {q["id"]: q for q in AI_QUESTIONS}
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "change-me")
 
-app = FastAPI(title="Human–AI Imprint Pilot v1.1")
+app = FastAPI(title="Human–AI Imprint Pilot v1.3")
 app.mount("/static", StaticFiles(directory=BASE/"static"), name="static")
 
 def db():
-    con = sqlite3.connect(DB)
-    con.row_factory = sqlite3.Row
-    return con
-
-def columns(con, table):
-    return {r[1] for r in con.execute(f"PRAGMA table_info({table})").fetchall()}
+    return connect(DATABASE_URL, row_factory=dict_row, autocommit=False)
 
 def init_db():
     con = db()
-    con.executescript("""
-    PRAGMA journal_mode=WAL;
-    CREATE TABLE IF NOT EXISTS participants(
-      id TEXT PRIMARY KEY,
-      alias TEXT,
-      age_confirmed INTEGER NOT NULL,
-      consent INTEGER NOT NULL,
-      created_at REAL NOT NULL,
-      finished_human_at REAL,
-      finished_ai_at REAL
-    );
-    CREATE TABLE IF NOT EXISTS answers(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      participant_id TEXT NOT NULL,
-      question_id TEXT NOT NULL,
-      answer_id TEXT,
-      answer_text TEXT,
-      reaction_ms INTEGER,
-      changed_answer INTEGER DEFAULT 0,
-      order_index INTEGER,
-      created_at REAL NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS ai_answers(
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      participant_id TEXT NOT NULL,
-      probe_id TEXT NOT NULL,
-      model_name TEXT,
-      answer_text TEXT NOT NULL DEFAULT '',
-      created_at REAL NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS fingerprints(
-      participant_id TEXT PRIMARY KEY,
-      vector_json TEXT NOT NULL,
-      created_at REAL NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS ai_fingerprints(
-      participant_id TEXT PRIMARY KEY,
-      model_name TEXT NOT NULL,
-      vector_json TEXT NOT NULL,
-      created_at REAL NOT NULL
-    );
-    CREATE TABLE IF NOT EXISTS ai_metadata(
-      participant_id TEXT PRIMARY KEY,
-      model_name TEXT NOT NULL,
-      memory_status TEXT NOT NULL DEFAULT 'unknown',
-      custom_instructions TEXT NOT NULL DEFAULT 'unknown',
-      usage_duration TEXT NOT NULL DEFAULT 'unknown',
-      fresh_chat INTEGER NOT NULL DEFAULT 1,
-      created_at REAL NOT NULL
-    );
-    """)
-    # Safe migration from v1.
-    ai_cols = columns(con, "ai_answers")
-    if "choice_id" not in ai_cols:
-        con.execute("ALTER TABLE ai_answers ADD COLUMN choice_id TEXT")
-    if "reason_text" not in ai_cols:
-        con.execute("ALTER TABLE ai_answers ADD COLUMN reason_text TEXT")
-    con.execute("CREATE UNIQUE INDEX IF NOT EXISTS uq_human_answer ON answers(participant_id,question_id)")
-    con.execute("CREATE UNIQUE INDEX IF NOT EXISTS uq_ai_answer ON ai_answers(participant_id,probe_id)")
+    cur = con.cursor()
+    statements = [
+        """CREATE TABLE IF NOT EXISTS participants(
+          id TEXT PRIMARY KEY, alias TEXT, age_confirmed INTEGER NOT NULL,
+          consent INTEGER NOT NULL, created_at DOUBLE PRECISION NOT NULL,
+          finished_human_at DOUBLE PRECISION, finished_ai_at DOUBLE PRECISION)""",
+        """CREATE TABLE IF NOT EXISTS answers(
+          id BIGSERIAL PRIMARY KEY, participant_id TEXT NOT NULL, question_id TEXT NOT NULL,
+          answer_id TEXT, answer_text TEXT, reaction_ms INTEGER, changed_answer INTEGER DEFAULT 0,
+          order_index INTEGER, created_at DOUBLE PRECISION NOT NULL,
+          UNIQUE(participant_id, question_id))""",
+        """CREATE TABLE IF NOT EXISTS ai_answers(
+          id BIGSERIAL PRIMARY KEY, participant_id TEXT NOT NULL, probe_id TEXT NOT NULL,
+          model_name TEXT, answer_text TEXT NOT NULL DEFAULT '', choice_id TEXT, reason_text TEXT,
+          created_at DOUBLE PRECISION NOT NULL, UNIQUE(participant_id, probe_id))""",
+        """CREATE TABLE IF NOT EXISTS fingerprints(
+          participant_id TEXT PRIMARY KEY, vector_json TEXT NOT NULL, created_at DOUBLE PRECISION NOT NULL)""",
+        """CREATE TABLE IF NOT EXISTS ai_fingerprints(
+          participant_id TEXT PRIMARY KEY, model_name TEXT NOT NULL, vector_json TEXT NOT NULL,
+          created_at DOUBLE PRECISION NOT NULL)""",
+        """CREATE TABLE IF NOT EXISTS ai_metadata(
+          participant_id TEXT PRIMARY KEY, model_name TEXT NOT NULL,
+          memory_status TEXT NOT NULL DEFAULT 'unknown',
+          custom_instructions TEXT NOT NULL DEFAULT 'unknown',
+          usage_duration TEXT NOT NULL DEFAULT 'unknown',
+          fresh_chat INTEGER NOT NULL DEFAULT 1, created_at DOUBLE PRECISION NOT NULL)"""
+    ]
+    for sql in statements:
+        cur.execute(sql)
     con.commit()
     con.close()
 
@@ -123,7 +91,7 @@ class AIPayload(BaseModel):
 
 def participant_or_404(pid: str):
     con = db()
-    row = con.execute("SELECT * FROM participants WHERE id=?", (pid,)).fetchone()
+    row = con.execute("SELECT * FROM participants WHERE id=%s", (pid,)).fetchone()
     con.close()
     if not row:
         raise HTTPException(404, "participant not found")
@@ -131,7 +99,7 @@ def participant_or_404(pid: str):
 
 def answered_ids(pid: str):
     con = db()
-    rows = con.execute("SELECT question_id FROM answers WHERE participant_id=? ORDER BY order_index", (pid,)).fetchall()
+    rows = con.execute("SELECT question_id FROM answers WHERE participant_id=%s ORDER BY order_index", (pid,)).fetchall()
     con.close()
     return [r["question_id"] for r in rows]
 
@@ -179,13 +147,13 @@ def aggregate_vector(rows, mapping, id_field, choice_field):
 
 def compute_human_fingerprint(pid: str):
     con = db()
-    rows = con.execute("SELECT question_id,answer_id FROM answers WHERE participant_id=?", (pid,)).fetchall()
+    rows = con.execute("SELECT question_id,answer_id FROM answers WHERE participant_id=%s", (pid,)).fetchall()
     con.close()
     return aggregate_vector(rows, QMAP, "question_id", "answer_id")
 
 def compute_ai_fingerprint(pid: str):
     con = db()
-    rows = con.execute("SELECT probe_id,choice_id FROM ai_answers WHERE participant_id=?", (pid,)).fetchall()
+    rows = con.execute("SELECT probe_id,choice_id FROM ai_answers WHERE participant_id=%s", (pid,)).fetchall()
     con.close()
     return aggregate_vector(rows, AIMAP, "probe_id", "choice_id")
 
@@ -225,7 +193,7 @@ def start(p: StartPayload):
         raise HTTPException(400, "Consent and adult confirmation required")
     pid = uuid.uuid4().hex[:16]
     con = db()
-    con.execute("INSERT INTO participants(id,alias,age_confirmed,consent,created_at) VALUES(?,?,?,?,?)",
+    con.execute("INSERT INTO participants(id,alias,age_confirmed,consent,created_at) VALUES(%s,%s,%s,%s,%s)",
                 (pid, p.alias or "", 1,1,time.time()))
     con.commit(); con.close()
     return {"participant_id":pid}
@@ -237,8 +205,10 @@ def next_question(pid: str):
     if not q:
         vec = compute_human_fingerprint(pid)
         con = db()
-        con.execute("UPDATE participants SET finished_human_at=COALESCE(finished_human_at,?) WHERE id=?", (time.time(),pid))
-        con.execute("INSERT OR REPLACE INTO fingerprints(participant_id,vector_json,created_at) VALUES(?,?,?)",
+        con.execute("UPDATE participants SET finished_human_at=COALESCE(finished_human_at,%s) WHERE id=%s", (time.time(),pid))
+        con.execute("""INSERT INTO fingerprints(participant_id,vector_json,created_at) VALUES(%s,%s,%s)
+                    ON CONFLICT(participant_id) DO UPDATE SET
+                    vector_json=EXCLUDED.vector_json, created_at=EXCLUDED.created_at""",
                     (pid,json.dumps(vec,ensure_ascii=False),time.time()))
         con.commit(); con.close()
         return {"done":True}
@@ -262,7 +232,7 @@ def answer(p: AnswerPayload):
             raise HTTPException(400, "invalid option")
     con = db()
     con.execute("""INSERT INTO answers(participant_id,question_id,answer_id,answer_text,reaction_ms,changed_answer,order_index,created_at)
-                   VALUES(?,?,?,?,?,?,?,?)""",
+                   VALUES(%s,%s,%s,%s,%s,%s,%s,%s)""",
                 (p.participant_id,p.question_id,p.answer_id,p.answer_text or "",max(0,p.reaction_ms),
                  int(p.changed_answer),len(done)+1,time.time()))
     con.commit(); con.close()
@@ -324,24 +294,41 @@ def ai_submit(p: AIPayload):
 
     con = db()
     for aid,(choice,reason) in normalized.items():
-        con.execute("""INSERT OR REPLACE INTO ai_answers
+        con.execute("""INSERT INTO ai_answers
                        (participant_id,probe_id,model_name,answer_text,choice_id,reason_text,created_at)
-                       VALUES(?,?,?,?,?,?,?)""",
+                       VALUES(%s,%s,%s,%s,%s,%s,%s)
+                       ON CONFLICT(participant_id,probe_id) DO UPDATE SET
+                         model_name=EXCLUDED.model_name,
+                         answer_text=EXCLUDED.answer_text,
+                         choice_id=EXCLUDED.choice_id,
+                         reason_text=EXCLUDED.reason_text,
+                         created_at=EXCLUDED.created_at""",
                     (p.participant_id,aid,p.model_name,reason,choice,reason,time.time()))
-    con.execute("UPDATE participants SET finished_ai_at=? WHERE id=?", (time.time(),p.participant_id))
-    con.execute("""INSERT OR REPLACE INTO ai_metadata
+    con.execute("UPDATE participants SET finished_ai_at=%s WHERE id=%s", (time.time(),p.participant_id))
+    con.execute("""INSERT INTO ai_metadata
                    (participant_id,model_name,memory_status,custom_instructions,usage_duration,fresh_chat,created_at)
-                   VALUES(?,?,?,?,?,?,?)""",
+                   VALUES(%s,%s,%s,%s,%s,%s,%s)
+                   ON CONFLICT(participant_id) DO UPDATE SET
+                     model_name=EXCLUDED.model_name,
+                     memory_status=EXCLUDED.memory_status,
+                     custom_instructions=EXCLUDED.custom_instructions,
+                     usage_duration=EXCLUDED.usage_duration,
+                     fresh_chat=EXCLUDED.fresh_chat,
+                     created_at=EXCLUDED.created_at""",
                 (p.participant_id,p.model_name,p.memory_status,p.custom_instructions,
                  p.usage_duration,int(p.fresh_chat),time.time()))
     con.commit(); con.close()
 
     vec = compute_ai_fingerprint(p.participant_id)
     con = db()
-    con.execute("""INSERT OR REPLACE INTO ai_fingerprints(participant_id,model_name,vector_json,created_at)
-                   VALUES(?,?,?,?)""",
+    con.execute("""INSERT INTO ai_fingerprints(participant_id,model_name,vector_json,created_at)
+                   VALUES(%s,%s,%s,%s)
+                   ON CONFLICT(participant_id) DO UPDATE SET
+                     model_name=EXCLUDED.model_name,
+                     vector_json=EXCLUDED.vector_json,
+                     created_at=EXCLUDED.created_at""",
                 (p.participant_id,p.model_name,json.dumps(vec,ensure_ascii=False),time.time()))
-    human_row = con.execute("SELECT vector_json FROM fingerprints WHERE participant_id=?", (p.participant_id,)).fetchone()
+    human_row = con.execute("SELECT vector_json FROM fingerprints WHERE participant_id=%s", (p.participant_id,)).fetchone()
     con.commit(); con.close()
 
     metrics = {}
@@ -493,8 +480,8 @@ def export_csv(key: Optional[str]=None, x_admin_key: Optional[str]=Header(defaul
     con.close()
     out = io.StringIO()
     w = csv.writer(out)
-    w.writerow(rows[0].keys() if rows else ["participant_id"])
-    for r in rows: w.writerow(list(r))
+    w.writerow(list(rows[0].keys()) if rows else ["participant_id"])
+    for r in rows: w.writerow([r[k] for k in r.keys()])
     return StreamingResponse(iter([out.getvalue()]), media_type="text/csv",
                              headers={"Content-Disposition":"attachment; filename=human_answers.csv"})
 
@@ -508,8 +495,8 @@ def export_ai_csv(key: Optional[str]=None, x_admin_key: Optional[str]=Header(def
     """).fetchall()
     con.close()
     out = io.StringIO(); w=csv.writer(out)
-    w.writerow(rows[0].keys() if rows else ["participant_id"])
-    for r in rows: w.writerow(list(r))
+    w.writerow(list(rows[0].keys()) if rows else ["participant_id"])
+    for r in rows: w.writerow([r[k] for k in r.keys()])
     return StreamingResponse(iter([out.getvalue()]), media_type="text/csv",
                              headers={"Content-Disposition":"attachment; filename=ai_answers.csv"})
 
@@ -534,4 +521,4 @@ def export_fp(key: Optional[str]=None, x_admin_key: Optional[str]=Header(default
 
 @app.get("/health")
 def health():
-    return {"ok":True,"version":"1.1"}
+    return {"ok":True,"version":"1.3"}

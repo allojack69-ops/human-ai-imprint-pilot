@@ -4,6 +4,4 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 ENV PORT=8000
-ENV DATABASE_PATH=/data/pilot.db
-RUN mkdir -p /data
 CMD ["sh","-c","uvicorn app:app --host 0.0.0.0 --port ${PORT}"]
