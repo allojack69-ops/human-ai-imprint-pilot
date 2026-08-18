@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="uk"><head><meta charset="utf-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Pilot Admin</title><link rel="stylesheet" href="/static/style.css"/></head>
+<body><main class="wrap">
+<section class="card">
+<div class="eyebrow">HUMAN–AI IMPRINT · ADMIN</div><h1>Live study summary</h1>
+<div id="metrics" class="metrics"></div>
+<h2>Paired participants</h2><div id="pairs"></div>
+<p class="muted">Ця сторінка — оперативний зріз. Для повної статистики використовуй offline analyzer.</p>
+</section></main>
+<script>
+const params=new URLSearchParams(location.search); const key=params.get("key")||"";
+async function run(){
+ const r=await fetch("/admin/summary?key="+encodeURIComponent(key)); const d=await r.json();
+ if(!r.ok){document.body.innerHTML="<pre>Access denied</pre>";return}
+ const vals=[
+ ["Participants",d.participants_total],["Human complete",d.human_completed],["AI complete",d.ai_completed],
+ ["Pairs",d.paired_n],["Matched cosine",fmt(d.matched_similarity_mean)],["Mismatched cosine",fmt(d.mismatched_similarity_mean)],
+ ["Gap",fmt(d.similarity_gap)],["Top-1 ID",pct(d.top1_identification_accuracy)],
+ ["Within-family mismatch",fmt(d.within_family_mismatched_mean)],["Within-family gap",fmt(d.within_family_gap)],
+ ["Within-family top-1",pct(d.within_family_top1_accuracy)]
+ ];
+ document.getElementById("metrics").innerHTML=vals.map(x=>`<div class="metric"><b>${x[1]}</b><span>${x[0]}</span></div>`).join("");
+ document.getElementById("pairs").innerHTML=(d.pairs||[]).map(p=>`<div class="pair"><b>${p.participant_id}</b> · ${p.model_name} · cosine ${fmt(p.matched_cosine)} · sign ${pct(p.sign_agreement)} · top1 ${p.top1_identified?"✓":"—"}</div>`).join("")||"<p>No pairs yet.</p>";
+}
+function fmt(x){return x==null?"—":Number(x).toFixed(3)} function pct(x){return x==null?"—":(100*x).toFixed(1)+"%"} run();
+</script></body></html>

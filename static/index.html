@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Human–AI Imprint Pilot v1.1</title>
+<link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+<main class="wrap">
+  <section id="start" class="card">
+    <div class="eyebrow">HUMAN–AI IMPRINT · PILOT v1.1</div>
+    <h1>Як ти приймаєш рішення?</h1>
+    <p class="lead">Короткий тест із переважно легких системних ситуацій. Правильних відповідей немає — важливий твій природний перший хід.</p>
+    <div class="note">Орієнтовно 10–15 хвилин. Після людської частини буде один copy/paste тест для твого звичного AI.</div>
+    <label>Псевдонім (необов’язково)<input id="alias" placeholder="Наприклад: participant-07"/></label>
+    <label class="check"><input type="checkbox" id="adult"/> Мені 18 років або більше.</label>
+    <label class="check"><input type="checkbox" id="consent"/> Я добровільно погоджуюсь на дослідницький аналіз моїх відповідей, часу реакції та вставлених відповідей AI. Я не буду вставляти приватні або чутливі дані в поле AI-відповідей.</label>
+    <button id="startBtn">Почати тест</button>
+    <div id="startErr" class="err"></div>
+  </section>
+
+  <section id="test" class="card hidden">
+    <div class="topline"><span id="progress">0/24</span><span id="level"></span></div>
+    <div class="bar"><div id="barFill"></div></div>
+    <h2 id="qtext"></h2>
+    <div id="options"></div>
+    <textarea id="freeText" class="hidden" rows="7" placeholder="Опиши свої перші кроки природно."></textarea>
+    <button id="submitFree" class="hidden">Далі</button>
+  </section>
+
+  <section id="humanDone" class="card hidden">
+    <div class="eyebrow">HUMAN BASELINE COMPLETE</div>
+    <h2>Перша частина готова</h2>
+    <p>Тепер потрібен твій <strong>звичний особистий AI</strong> — ChatGPT / Claude / Gemini або інший агент, яким ти реально користуєшся.</p>
+    <ol>
+      <li>Натисни «Показати AI-пакет».</li>
+      <li>Відкрий <strong>НОВИЙ звичайний чат</strong> у своєму звичному особистому акаунті AI.</li>
+      <li>Не використовуй Temporary / Incognito режим, якщо він вимикає звичну персоналізацію або memory.</li>
+      <li>Скопіюй весь prompt і встав JSON-відповідь назад сюди.</li>
+    </ol>
+    <p class="muted">Prompt спеціально просить AI не розкривати приватні факти про тебе.</p>
+    <button id="loadAIPack">Показати AI-пакет</button>
+  </section>
+
+  <section id="aiStage" class="card hidden">
+    <div class="eyebrow">PERSONAL AI FINGERPRINT</div>
+    <h2>Тест твого AI</h2>
+    <label>Модель / сервіс<input id="modelName" placeholder="Наприклад: ChatGPT"/></label>
+    <label>Memory / персональна пам’ять
+      <select id="memoryStatus"><option value="on">Увімкнена</option><option value="off">Вимкнена</option><option value="unknown" selected>Не знаю</option></select>
+    </label>
+    <label>Custom instructions / персональні інструкції
+      <select id="customInstructions"><option value="on">Є</option><option value="off">Немає</option><option value="unknown" selected>Не знаю</option></select>
+    </label>
+    <label>Як давно приблизно користуєшся цим AI?
+      <select id="usageDuration"><option value="<1m">&lt;1 місяця</option><option value="1-6m">1–6 місяців</option><option value="6-12m">6–12 місяців</option><option value="1-2y">1–2 роки</option><option value="2y+">2+ роки</option><option value="unknown" selected>Не знаю</option></select>
+    </label>
+    <label>Скопіюй весь prompt<textarea id="aiPrompt" rows="15" readonly></textarea></label>
+    <button id="copyPrompt">Скопіювати prompt</button>
+    <label>Встав JSON-відповідь AI<textarea id="aiResult" rows="15" placeholder='{"answers":{"P01":{"choice":"B","reason":"..."},"P02":{"choice":"A","reason":"..."}}}'></textarea></label>
+    <button id="submitAI">Завершити</button>
+    <div id="aiErr" class="err"></div>
+  </section>
+
+  <section id="finish" class="card hidden">
+    <div class="eyebrow">DONE</div>
+    <h2>Готово.</h2>
+    <p>Пара «людина ↔ особистий AI» збережена.</p>
+    <p class="muted">Participant ID: <code id="pidShow"></code></p>
+  </section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>

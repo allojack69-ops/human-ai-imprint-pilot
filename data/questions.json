@@ -1,0 +1,763 @@
+[
+  {
+    "id": "E01",
+    "level": "easy",
+    "trait": "state_dependence",
+    "text": "Один із п’яти однакових датчиків стабільно показує інше значення. Перший хід?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Замінити датчик",
+        "v": {
+          "state_dependence": -1,
+          "info_value": 0
+        }
+      },
+      {
+        "id": "B",
+        "text": "Перевірити, чи він у іншому локальному середовищі",
+        "v": {
+          "state_dependence": 1,
+          "info_value": 1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Підтягнути його покази до середнього",
+        "v": {
+          "state_dependence": -0.5,
+          "info_value": -0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "E02",
+    "level": "easy",
+    "trait": "redundancy",
+    "text": "Критична система має один дуже надійний вузол. Що привабливіше?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Ще сильніше посилити один вузол",
+        "v": {
+          "redundancy": -1,
+          "resilience": 0
+        }
+      },
+      {
+        "id": "B",
+        "text": "Додати незалежний резерв",
+        "v": {
+          "redundancy": 1,
+          "resilience": 1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Нічого не змінювати",
+        "v": {
+          "redundancy": -0.5,
+          "resilience": -0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "E03",
+    "level": "easy",
+    "trait": "info_value",
+    "text": "Перед незворотним рішенням є дешевий тест, який може змінити вибір. Що робиш?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Тестую",
+        "v": {
+          "info_value": 1,
+          "reversibility": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Роблю вибір одразу",
+        "v": {
+          "info_value": -1,
+          "reversibility": -0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "E04",
+    "level": "easy",
+    "trait": "relation_orientation",
+    "text": "Процес із 4 етапів погіршився, але кожен етап окремо виглядає нормально. Перший хід?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Перевірити переходи між етапами",
+        "v": {
+          "relation_orientation": 1,
+          "systems_orientation": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Замінити найстаріший етап",
+        "v": {
+          "relation_orientation": -1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Збільшити загальний ресурс",
+        "v": {
+          "relation_orientation": 0,
+          "resilience": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "E05",
+    "level": "easy",
+    "trait": "control",
+    "text": "Два джерела доходу однакові за прибутком. Одне повністю під твоїм контролем, друге залежить від партнера.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Обираю контрольоване",
+        "v": {
+          "control": 1,
+          "resilience": 0.5
+        }
+      },
+      {
+        "id": "B",
+        "text": "Байдуже",
+        "v": {
+          "control": 0
+        }
+      },
+      {
+        "id": "C",
+        "text": "Обираю партнерське",
+        "v": {
+          "control": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E06",
+    "level": "easy",
+    "trait": "goal_definition",
+    "text": "Три варіанти мають різні плюси, але мета задачі не вказана. Перший хід?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Вибрати найефективніший",
+        "v": {
+          "goal_definition": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Спочатку уточнити, що оптимізуємо",
+        "v": {
+          "goal_definition": 1,
+          "uncertainty": 1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Взяти середній варіант",
+        "v": {
+          "goal_definition": -0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "E07",
+    "level": "easy",
+    "trait": "model_revision",
+    "text": "Стара карта правильна всюди, крім однієї дороги. Що робиш?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Викинути карту й будувати нову",
+        "v": {
+          "model_revision": 1,
+          "complexity_cost": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Виправити ділянку й уважніше стежити за іншими змінами",
+        "v": {
+          "model_revision": 0.7,
+          "complexity_cost": 1,
+          "state_dependence": 0.5
+        }
+      },
+      {
+        "id": "C",
+        "text": "Ігнорувати розбіжність",
+        "v": {
+          "model_revision": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E08",
+    "level": "easy",
+    "trait": "resilience",
+    "text": "Варіант A швидший на 20%, варіант B переживає локальні збої без повної зупинки.",
+    "options": [
+      {
+        "id": "A",
+        "text": "A",
+        "v": {
+          "resilience": -1,
+          "performance": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "B",
+        "v": {
+          "resilience": 1,
+          "performance": -0.3
+        }
+      }
+    ]
+  },
+  {
+    "id": "E09",
+    "level": "easy",
+    "trait": "uncertainty",
+    "text": "Новий факт дивний, але ще не перевірений. Що робиш?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Одразу перебудовую модель",
+        "v": {
+          "uncertainty": -1,
+          "model_revision": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Тримаю окремо й перевіряю",
+        "v": {
+          "uncertainty": 1,
+          "info_value": 1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Ігнорую",
+        "v": {
+          "uncertainty": -0.5,
+          "info_value": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E10",
+    "level": "easy",
+    "trait": "tail_risk",
+    "text": "Рідкісний збій майже ніколи не стається, але може обнулити весь результат.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Враховую його як окремий критичний ризик",
+        "v": {
+          "tail_risk": 1,
+          "resilience": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Орієнтуюся лише на середній результат",
+        "v": {
+          "tail_risk": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E11",
+    "level": "easy",
+    "trait": "diversity",
+    "text": "Середовище непередбачуване. Що більше подобається?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Одна універсальна стратегія",
+        "v": {
+          "diversity": -1,
+          "complexity_cost": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Кілька різних стратегій",
+        "v": {
+          "diversity": 1,
+          "resilience": 0.7
+        }
+      }
+    ]
+  },
+  {
+    "id": "E12",
+    "level": "easy",
+    "trait": "cheap_probe",
+    "text": "Є складна діагностика й простий візуальний огляд, який іноді одразу знаходить проблему.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Спочатку простий огляд",
+        "v": {
+          "cheap_probe": 1,
+          "complexity_cost": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Одразу повна діагностика",
+        "v": {
+          "cheap_probe": -1,
+          "info_value": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "E13",
+    "level": "easy",
+    "trait": "causal_discipline",
+    "text": "X майже завжди з’являється перед Y. Це вже достатньо, щоб сказати «X спричиняє Y»?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Так",
+        "v": {
+          "causal_discipline": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Ні, потрібна додаткова перевірка",
+        "v": {
+          "causal_discipline": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E14",
+    "level": "easy",
+    "trait": "state_dependence",
+    "text": "Однакова дія дає різний результат у двох групах. Що шукаєш?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Спільну середню",
+        "v": {
+          "state_dependence": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Умову, що розділяє групи",
+        "v": {
+          "state_dependence": 1,
+          "relation_orientation": 0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "E15",
+    "level": "easy",
+    "trait": "reversibility",
+    "text": "Два рішення однаково вигідні, але одне легко відкотити, інше майже незворотне.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Легко зворотне",
+        "v": {
+          "reversibility": 1,
+          "option_value": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Незворотне",
+        "v": {
+          "reversibility": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E16",
+    "level": "easy",
+    "trait": "option_value",
+    "text": "Два ходи дають однаковий результат зараз. Один залишає більше сильних варіантів на потім.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Той, що залишає більше варіантів",
+        "v": {
+          "option_value": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Байдуже",
+        "v": {
+          "option_value": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "E17",
+    "level": "easy",
+    "trait": "model_synthesis",
+    "text": "Дві моделі працюють у різних режимах. Що привабливіше?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Назавжди вручну вибирати між ними",
+        "v": {
+          "model_synthesis": 0,
+          "complexity_cost": -0.5
+        }
+      },
+      {
+        "id": "B",
+        "text": "Побудувати правило, яке враховує режим автоматично",
+        "v": {
+          "model_synthesis": 1,
+          "state_dependence": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E18",
+    "level": "easy",
+    "trait": "audit_direction",
+    "text": "Новий документ суперечить старим. Як перевіряти?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Лише новий через старі",
+        "v": {
+          "audit_direction": -0.5
+        }
+      },
+      {
+        "id": "B",
+        "text": "Старі через новий і новий через старі",
+        "v": {
+          "audit_direction": 1,
+          "model_revision": 0.5
+        }
+      },
+      {
+        "id": "C",
+        "text": "Просто довіритись новішому",
+        "v": {
+          "audit_direction": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E19",
+    "level": "easy",
+    "trait": "localize_failure",
+    "text": "80 із 1000 користувачів мають проблему після оновлення.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Відкотити всім",
+        "v": {
+          "localize_failure": -0.5,
+          "resilience": 0.2
+        }
+      },
+      {
+        "id": "B",
+        "text": "Виділити 80 і шукати спільну умову",
+        "v": {
+          "localize_failure": 1,
+          "state_dependence": 1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Ігнорувати 80",
+        "v": {
+          "localize_failure": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E20",
+    "level": "easy",
+    "trait": "resilience",
+    "text": "Є центральна дорога й дві об’їзні. Об’їзні трохи повільніші, але зменшують ризик повної зупинки мережі.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Центральна",
+        "v": {
+          "resilience": -1,
+          "performance": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Об’їзні",
+        "v": {
+          "resilience": 1,
+          "redundancy": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E21",
+    "level": "easy",
+    "trait": "info_value",
+    "text": "Тест дає нові дані, але вони не можуть змінити жодне наступне рішення.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Все одно тестую",
+        "v": {
+          "info_value": -0.3
+        }
+      },
+      {
+        "id": "B",
+        "text": "Не витрачаю ресурс лише заради даних",
+        "v": {
+          "info_value": 1,
+          "complexity_cost": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E22",
+    "level": "easy",
+    "trait": "performance",
+    "text": "Два варіанти однаково надійні й керовані. Один стабільно дає на 15% більше результату.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Беру сильніший",
+        "v": {
+          "performance": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Беру слабший",
+        "v": {
+          "performance": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "E23",
+    "level": "easy",
+    "trait": "control",
+    "text": "Малий напрям повністю під твоїм контролем; великий залежить від одного зовнішнього партнера.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Посилюю малий",
+        "v": {
+          "control": 1,
+          "option_value": 0.5
+        }
+      },
+      {
+        "id": "B",
+        "text": "Посилюю великий",
+        "v": {
+          "control": -0.7,
+          "performance": 0.7
+        }
+      }
+    ]
+  },
+  {
+    "id": "E24",
+    "level": "easy",
+    "trait": "systems_orientation",
+    "text": "Команда працює гірше, хоча кожен окремо каже, що працює як завжди.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Перевіряю взаємодію й передачу роботи",
+        "v": {
+          "systems_orientation": 1,
+          "relation_orientation": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Шукаю одного слабкого працівника",
+        "v": {
+          "systems_orientation": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "M01",
+    "level": "medium",
+    "trait": "goal_definition",
+    "text": "Канал A дешевший, але клієнти швидко відпадають. B дорожчий, але клієнти лишаються довше. Даних про маржу й LTV немає. Що робиш?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A",
+        "v": {
+          "goal_definition": -0.7
+        }
+      },
+      {
+        "id": "B",
+        "text": "B",
+        "v": {
+          "goal_definition": -0.4
+        }
+      },
+      {
+        "id": "C",
+        "text": "Спочатку добираю LTV/маржу й тільки потім порівнюю",
+        "v": {
+          "goal_definition": 1,
+          "info_value": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "M02",
+    "level": "medium",
+    "trait": "model_synthesis",
+    "text": "Правило R працює у 70% випадків, R2 — у решті. Є ознака Q, яка в 90% випадків показує режим. Що краще?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Завжди R",
+        "v": {
+          "model_synthesis": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Завжди R2",
+        "v": {
+          "model_synthesis": -1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Вбудувати Q у правило вибору режиму",
+        "v": {
+          "model_synthesis": 1,
+          "state_dependence": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "M03",
+    "level": "medium",
+    "trait": "tail_risk",
+    "text": "Стратегія A має вищий середній результат, але рідкісний збій повністю зупиняє систему. B трохи слабша, зате локалізує відмову. Що робиш?",
+    "options": [
+      {
+        "id": "A",
+        "text": "A",
+        "v": {
+          "tail_risk": -1,
+          "performance": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "B",
+        "v": {
+          "tail_risk": 1,
+          "resilience": 1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Шукаю гібрид, якщо він доступний",
+        "v": {
+          "tail_risk": 0.8,
+          "model_synthesis": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "M04",
+    "level": "medium",
+    "trait": "info_value",
+    "text": "Є тест, який коштує 5% бюджету й може змінити вибір між двома дорогими рішеннями. Після цього рішення незворотне.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Тестую",
+        "v": {
+          "info_value": 1,
+          "reversibility": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Не тестую",
+        "v": {
+          "info_value": -1,
+          "reversibility": -0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "H01",
+    "level": "hard",
+    "trait": "recursive_audit",
+    "text": "Модель A добре працювала роками. Новий перевірений факт F суперечить одному її базовому припущенню. Нова модель A2 пояснює старі дані й F, але ламає частину старих висновків. Опиши перші 3–5 кроків, які ти зробиш.",
+    "free_text": true,
+    "v": {}
+  },
+  {
+    "id": "H02",
+    "level": "hard",
+    "trait": "state_dependence",
+    "text": "Одна й та сама дія X сильно змінює Y лише при стані Z=1, а при Z=0 майже не діє. Додаткова умова W не змінює появу X, але при W=1 ефект X→Y майже зникає. Як би ти описав структуру причинності тут?",
+    "free_text": true,
+    "v": {}
+  }
+]

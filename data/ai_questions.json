@@ -1,0 +1,527 @@
+[
+  {
+    "id": "P01",
+    "trait": "state_dependence",
+    "text": "Four identical machines behave normally; a fifth behaves differently only in one room. What is your first interpretation?",
+    "options": [
+      {
+        "id": "A",
+        "text": "The fifth machine is probably defective",
+        "v": {
+          "state_dependence": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Check what differs about that room before blaming the machine",
+        "v": {
+          "state_dependence": 1,
+          "info_value": 0.5
+        }
+      },
+      {
+        "id": "C",
+        "text": "Normalize its output to the others",
+        "v": {
+          "state_dependence": -0.7
+        }
+      }
+    ]
+  },
+  {
+    "id": "P02",
+    "trait": "redundancy",
+    "text": "A critical service is extremely reliable but depends on one provider. Which upgrade is more attractive?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Make the same provider setup even faster",
+        "v": {
+          "redundancy": -1,
+          "performance": 0.7
+        }
+      },
+      {
+        "id": "B",
+        "text": "Add an independent fallback provider",
+        "v": {
+          "redundancy": 1,
+          "resilience": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P03",
+    "trait": "info_value",
+    "text": "Before a costly irreversible choice, a small test could change which option is best. What do you do?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Run the test first",
+        "v": {
+          "info_value": 1,
+          "reversibility": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Choose immediately",
+        "v": {
+          "info_value": -1,
+          "reversibility": -0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "P04",
+    "trait": "relation_orientation",
+    "text": "Every module of a workflow looks healthy in isolation, but total output suddenly worsens. Where do you inspect first?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Interfaces and handoffs between modules",
+        "v": {
+          "relation_orientation": 1,
+          "systems_orientation": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "The oldest individual module",
+        "v": {
+          "relation_orientation": -1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Increase resources everywhere",
+        "v": {
+          "relation_orientation": 0,
+          "resilience": 0.3
+        }
+      }
+    ]
+  },
+  {
+    "id": "P05",
+    "trait": "control",
+    "text": "Two opportunities have similar expected returns. One is fully under your control; the other depends on a single partner.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Prefer the controlled one",
+        "v": {
+          "control": 1,
+          "resilience": 0.4
+        }
+      },
+      {
+        "id": "B",
+        "text": "Treat them as equivalent",
+        "v": {
+          "control": 0
+        }
+      },
+      {
+        "id": "C",
+        "text": "Prefer the partner-dependent one",
+        "v": {
+          "control": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P06",
+    "trait": "goal_definition",
+    "text": "Three strategies have different strengths, but nobody has defined what success means. What is your first move?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Pick the most efficient-looking strategy",
+        "v": {
+          "goal_definition": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Define the objective before ranking strategies",
+        "v": {
+          "goal_definition": 1,
+          "uncertainty": 0.5
+        }
+      },
+      {
+        "id": "C",
+        "text": "Choose the middle option",
+        "v": {
+          "goal_definition": -0.5
+        }
+      }
+    ]
+  },
+  {
+    "id": "P07",
+    "trait": "model_revision",
+    "text": "A long-used model fails in one narrow, repeatable regime but still works elsewhere. What do you prefer first?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Discard the whole model",
+        "v": {
+          "model_revision": 0.7,
+          "complexity_cost": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Localize the failure regime and revise the model there",
+        "v": {
+          "model_revision": 1,
+          "state_dependence": 0.8
+        }
+      },
+      {
+        "id": "C",
+        "text": "Ignore the exception because the model mostly works",
+        "v": {
+          "model_revision": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P08",
+    "trait": "resilience",
+    "text": "System X is faster. System Y is slightly slower but continues operating after a local failure.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Prefer X",
+        "v": {
+          "resilience": -1,
+          "performance": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Prefer Y",
+        "v": {
+          "resilience": 1,
+          "performance": -0.3
+        }
+      }
+    ]
+  },
+  {
+    "id": "P09",
+    "trait": "uncertainty",
+    "text": "A surprising observation appears once and has not been independently verified. What is the first response?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Rebuild the theory immediately",
+        "v": {
+          "uncertainty": -1,
+          "model_revision": 0.7
+        }
+      },
+      {
+        "id": "B",
+        "text": "Keep it separate and verify it",
+        "v": {
+          "uncertainty": 1,
+          "info_value": 0.8
+        }
+      },
+      {
+        "id": "C",
+        "text": "Discard it as noise",
+        "v": {
+          "uncertainty": -0.7,
+          "info_value": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P10",
+    "trait": "tail_risk",
+    "text": "A rare failure has low probability but can erase nearly all accumulated gains. How should it enter the decision?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Treat it as a distinct critical risk",
+        "v": {
+          "tail_risk": 1,
+          "resilience": 0.8
+        }
+      },
+      {
+        "id": "B",
+        "text": "Use only average expected performance",
+        "v": {
+          "tail_risk": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P11",
+    "trait": "diversity",
+    "text": "Future conditions are poorly predictable. Which architecture is more attractive?",
+    "options": [
+      {
+        "id": "A",
+        "text": "One optimized universal strategy",
+        "v": {
+          "diversity": -1,
+          "complexity_cost": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Several meaningfully different strategies",
+        "v": {
+          "diversity": 1,
+          "resilience": 0.6
+        }
+      }
+    ]
+  },
+  {
+    "id": "P12",
+    "trait": "causal_discipline",
+    "text": "X usually happens before Y. Is that enough to conclude X causes Y?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Yes",
+        "v": {
+          "causal_discipline": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "No, causal discrimination is still needed",
+        "v": {
+          "causal_discipline": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P13",
+    "trait": "reversibility",
+    "text": "Two actions have equal expected value, but one is easy to undo and the other is almost irreversible.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Prefer the reversible action",
+        "v": {
+          "reversibility": 1,
+          "option_value": 0.7
+        }
+      },
+      {
+        "id": "B",
+        "text": "Prefer the irreversible action",
+        "v": {
+          "reversibility": -1
+        }
+      },
+      {
+        "id": "C",
+        "text": "No preference",
+        "v": {
+          "reversibility": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": "P14",
+    "trait": "option_value",
+    "text": "Two actions pay equally now. One preserves more strong future choices.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Prefer the action preserving future choices",
+        "v": {
+          "option_value": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Treat them as equal",
+        "v": {
+          "option_value": 0
+        }
+      },
+      {
+        "id": "C",
+        "text": "Prefer the action with fewer future branches",
+        "v": {
+          "option_value": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P15",
+    "trait": "model_synthesis",
+    "text": "Two rules work in different operating regimes, and the regime can be detected cheaply. What architecture do you prefer?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Choose one rule permanently",
+        "v": {
+          "model_synthesis": -1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Manually switch forever",
+        "v": {
+          "model_synthesis": 0,
+          "complexity_cost": -0.5
+        }
+      },
+      {
+        "id": "C",
+        "text": "Build the regime signal into an adaptive rule",
+        "v": {
+          "model_synthesis": 1,
+          "state_dependence": 1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P16",
+    "trait": "audit_direction",
+    "text": "One new report conflicts with a dozen older reports. Which audit is stronger?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Judge the new report only by the old ones",
+        "v": {
+          "audit_direction": -0.5
+        }
+      },
+      {
+        "id": "B",
+        "text": "Test the old set against the new report and the new report against the old set",
+        "v": {
+          "audit_direction": 1,
+          "model_revision": 0.5
+        }
+      },
+      {
+        "id": "C",
+        "text": "Trust whichever is newer",
+        "v": {
+          "audit_direction": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P17",
+    "trait": "localize_failure",
+    "text": "A change harms a small subgroup while most users improve. What is the best first decomposition?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Roll back for everyone immediately",
+        "v": {
+          "localize_failure": -0.4,
+          "resilience": 0.2
+        }
+      },
+      {
+        "id": "B",
+        "text": "Isolate the subgroup and search for a shared condition",
+        "v": {
+          "localize_failure": 1,
+          "state_dependence": 1
+        }
+      },
+      {
+        "id": "C",
+        "text": "Ignore the subgroup",
+        "v": {
+          "localize_failure": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P18",
+    "trait": "cheap_probe",
+    "text": "A cheap inspection can sometimes localize a fault immediately; a full diagnostic is slower and expensive.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Try the cheap informative inspection first",
+        "v": {
+          "cheap_probe": 1,
+          "complexity_cost": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Run the full diagnostic first",
+        "v": {
+          "cheap_probe": -1,
+          "info_value": 0.4
+        }
+      }
+    ]
+  },
+  {
+    "id": "P19",
+    "trait": "systems_orientation",
+    "text": "Six people each report working normally, yet team output falls sharply. What do you inspect first?",
+    "options": [
+      {
+        "id": "A",
+        "text": "Coordination, dependencies, and work transfer",
+        "v": {
+          "systems_orientation": 1,
+          "relation_orientation": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Find the weakest individual",
+        "v": {
+          "systems_orientation": -1
+        }
+      }
+    ]
+  },
+  {
+    "id": "P20",
+    "trait": "performance",
+    "text": "Two systems are equally safe, reversible, and controllable. One produces 15% more output consistently.",
+    "options": [
+      {
+        "id": "A",
+        "text": "Choose the higher-output system",
+        "v": {
+          "performance": 1
+        }
+      },
+      {
+        "id": "B",
+        "text": "Choose the lower-output system",
+        "v": {
+          "performance": -1
+        }
+      }
+    ]
+  }
+]

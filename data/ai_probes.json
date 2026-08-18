@@ -1,0 +1,34 @@
+[
+  {
+    "id": "A01",
+    "prompt": "A verified new fact contradicts one core assumption of a model you have relied on. What do you do first and why?"
+  },
+  {
+    "id": "A02",
+    "prompt": "One of five identical sensors consistently differs from the other four. What do you check first?"
+  },
+  {
+    "id": "A03",
+    "prompt": "A fast system has a rare failure mode that can stop the whole process. A slower system localizes failures. How do you decide between them?"
+  },
+  {
+    "id": "A04",
+    "prompt": "A new document conflicts with twelve older documents. Describe your first verification strategy."
+  },
+  {
+    "id": "A05",
+    "prompt": "The same intervention produces opposite effects in two groups. What kind of explanation do you look for first?"
+  },
+  {
+    "id": "A06",
+    "prompt": "You can collect more data before an irreversible decision, but the test costs resources. How do you decide whether the test is worth doing?"
+  },
+  {
+    "id": "A07",
+    "prompt": "Two models work in different regimes. Would you choose one, switch between them, or build a third structure? Explain."
+  },
+  {
+    "id": "A08",
+    "prompt": "A process worsens even though every component's average metric looks normal. Where do you look first?"
+  }
+]
