@@ -2,6 +2,7 @@ services:
   - type: web
     name: human-ai-imprint-pilot-v1-2
     runtime: docker
+    plan: free
     envVars:
       - key: ADMIN_KEY
         generateValue: true
