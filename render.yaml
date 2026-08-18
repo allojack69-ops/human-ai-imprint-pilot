@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: human-ai-imprint-pilot-v1-2
+    runtime: docker
+    envVars:
+      - key: ADMIN_KEY
+        generateValue: true
+      - key: DATABASE_PATH
+        value: /data/pilot.db
+    healthCheckPath: /health

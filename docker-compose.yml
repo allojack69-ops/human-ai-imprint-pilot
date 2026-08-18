@@ -1,0 +1,13 @@
+services:
+  pilot:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      ADMIN_KEY: "change-this"
+      DATABASE_PATH: "/data/pilot.db"
+    volumes:
+      - pilot_data:/data
+
+volumes:
+  pilot_data:
