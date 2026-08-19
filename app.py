@@ -20,8 +20,9 @@ AI_QUESTIONS = json.loads((BASE/"data/ai_questions.json").read_text(encoding="ut
 QMAP = {q["id"]: q for q in QUESTIONS}
 AIMAP = {q["id"]: q for q in AI_QUESTIONS}
 ADMIN_KEY = os.environ.get("ADMIN_KEY", "change-me")
+V14_COHORT_START = 1787119200.0  # 2026-08-19 06:00 UTC
 
-app = FastAPI(title="Human–AI Imprint Pilot v1.3")
+app = FastAPI(title="Human–AI Imprint Pilot v1.4")
 app.mount("/static", StaticFiles(directory=BASE/"static"), name="static")
 
 def db():
@@ -116,10 +117,9 @@ def choose_next(pid: str):
     done_set = set(done)
     easy = [q for q in QUESTIONS if q["level"]=="easy" and q["id"] not in done_set]
     medium = [q for q in QUESTIONS if q["level"]=="medium" and q["id"] not in done_set]
-    hard = [q for q in QUESTIONS if q["level"]=="hard" and q["id"] not in done_set]
     n = len(done)
 
-    # 18 easy + 4 medium + 2 hard.
+    # v1.4: 18 easy + 4 medium; hard free-text items are no longer mandatory.
     if n < 18 and easy:
         counts = trait_counts(pid)
         min_count = min([counts.get(q["trait"],0) for q in easy] or [0])
@@ -127,8 +127,6 @@ def choose_next(pid: str):
         return random.choice(candidates)
     if n < 22 and medium:
         return random.choice(medium)
-    if n < 24 and hard:
-        return hard[0]
     return None
 
 def aggregate_vector(rows, mapping, id_field, choice_field):
@@ -215,7 +213,7 @@ def next_question(pid: str):
     public = {k:q[k] for k in q if k not in ("v","trait")}
     if "options" in public:
         public["options"] = [{"id":o["id"],"text":o["text"]} for o in public["options"]]
-    return {"done":False,"question":public,"progress":{"answered":len(answered_ids(pid)),"target":24}}
+    return {"done":False,"question":public,"progress":{"answered":len(answered_ids(pid)),"target":22}}
 
 @app.post("/api/answer")
 def answer(p: AnswerPayload):
@@ -255,7 +253,9 @@ Important:
 - Do not try to imitate the participant.
 - Do not mention or reveal private facts about the user.
 - Do not optimize for appearing unique.
-- Choose exactly one listed option for every item.
+- These scenarios are deliberately balanced trade-offs: there is no single correct answer.
+- Use your usual default priorities when both options are defensible.
+- Do not hedge or average the options; choose exactly one listed option for every item.
 - Give a short reason (1-3 sentences).
 - Return ONLY valid JSON in exactly this shape:
 {
@@ -359,7 +359,7 @@ def model_family(name: str):
 
 def all_vectors():
     con = db()
-    hr = con.execute("SELECT participant_id,vector_json FROM fingerprints").fetchall()
+    hr = con.execute("SELECT f.participant_id,f.vector_json FROM fingerprints f JOIN participants p ON p.id=f.participant_id WHERE p.created_at >= %s AND COALESCE(p.alias,'') NOT LIKE 'SMOKE-%%'", (V14_COHORT_START,)).fetchall()
     ar = con.execute("""SELECT f.participant_id,f.model_name,f.vector_json,
                                m.memory_status,m.custom_instructions,m.usage_duration,m.fresh_chat
                         FROM ai_fingerprints f LEFT JOIN ai_metadata m ON f.participant_id=m.participant_id""").fetchall()
@@ -378,10 +378,10 @@ def all_vectors():
 
 def study_summary():
     con = db()
-    total = con.execute("SELECT COUNT(*) n FROM participants").fetchone()["n"]
-    human_done = con.execute("SELECT COUNT(*) n FROM participants WHERE finished_human_at IS NOT NULL").fetchone()["n"]
-    ai_done = con.execute("SELECT COUNT(*) n FROM participants WHERE finished_ai_at IS NOT NULL").fetchone()["n"]
-    rt = con.execute("SELECT AVG(reaction_ms) x FROM answers WHERE reaction_ms>0").fetchone()["x"]
+    total = con.execute("SELECT COUNT(*) n FROM participants WHERE created_at >= %s AND COALESCE(alias,'') NOT LIKE 'SMOKE-%%'", (V14_COHORT_START,)).fetchone()["n"]
+    human_done = con.execute("SELECT COUNT(*) n FROM participants WHERE created_at >= %s AND COALESCE(alias,'') NOT LIKE 'SMOKE-%%' AND finished_human_at IS NOT NULL", (V14_COHORT_START,)).fetchone()["n"]
+    ai_done = con.execute("SELECT COUNT(*) n FROM participants WHERE created_at >= %s AND COALESCE(alias,'') NOT LIKE 'SMOKE-%%' AND finished_ai_at IS NOT NULL", (V14_COHORT_START,)).fetchone()["n"]
+    rt = con.execute("SELECT AVG(a.reaction_ms) x FROM answers a JOIN participants p ON p.id=a.participant_id WHERE a.reaction_ms>0 AND p.created_at >= %s AND COALESCE(p.alias,'') NOT LIKE 'SMOKE-%%'", (V14_COHORT_START,)).fetchone()["x"]
     con.close()
 
     humans,ais = all_vectors()
@@ -521,4 +521,4 @@ def export_fp(key: Optional[str]=None, x_admin_key: Optional[str]=Header(default
 
 @app.get("/health")
 def health():
-    return {"ok":True,"version":"1.3"}
+    return {"ok":True,"version":"1.4"}
