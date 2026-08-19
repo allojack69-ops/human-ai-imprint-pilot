@@ -20,7 +20,7 @@ $("startBtn").onclick=async()=>{
     const j=await api("/api/start",{method:"POST",body:JSON.stringify({
       alias:$("alias").value.trim(),age_confirmed:$("adult").checked,consent:$("consent").checked
     })});
-    pid=j.participant_id; localStorage.setItem("pilot_pid_v11",pid); await loadNext();
+    pid=j.participant_id; localStorage.setItem("pilot_pid_v14",pid); await loadNext();
   }catch(e){$("startErr").textContent=e.message}
 };
 async function loadNext(){
@@ -84,6 +84,6 @@ $("submitAI").onclick=async()=>{
     try{
       const j=await api(`/api/next/${pid}`);
       if(j.done)show("humanDone"); else await loadNext();
-    }catch(e){localStorage.removeItem("pilot_pid_v11");pid=null;show("start")}
+    }catch(e){localStorage.removeItem("pilot_pid_v14");pid=null;show("start")}
   }
 })();
